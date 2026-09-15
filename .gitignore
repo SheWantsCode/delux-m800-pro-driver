@@ -1,3 +1,5 @@
 delux_driver
 ./obj/*
 *~
+#*
+.#*
