@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
         printf("INFO: Please, use sudo for current job.");
         return 0;
     }
+    
     if (argc < 2)
     {
         printf("Write ./%s --help to see how it use.\n", APP_NAME);
