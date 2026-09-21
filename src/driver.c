@@ -1,6 +1,6 @@
 #include "../inc/driver.h"
 
-int get_battery_value(libusb_device_handle *dev_handle, int *packet_id)
+int get_battery_charging(libusb_device_handle* dev_handle, int* packet_id)
 {
     int i = 1;
     while(1)
@@ -28,4 +28,31 @@ int get_battery_value(libusb_device_handle *dev_handle, int *packet_id)
             return buf[18];
         }
     }
+}
+
+int set_mouse_rate(int mouse_rate, libusb_device_handle* dev_handle, int* packet_id)
+{
+    int current_mouse_rate = 0x1;
+    if (mouse_rate == 1)
+    {
+        current_mouse_rate = Hz1000;
+    }
+    else if (mouse_rate == 2)
+    {
+        current_mouse_rate = Hz500;
+    }
+    else if (mouse_rate == 3)
+    {
+        current_mouse_rate = Hz250;
+    }
+    else if (mouse_rate == 4)
+    {
+        current_mouse_rate = Hz125;
+    }
+    else
+    {
+        return -1;
+    }
+
+    
 }

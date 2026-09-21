@@ -9,6 +9,14 @@
 
 #define BATTERY_CHARGING 0x65
 
-int get_battery_value(libusb_device_handle*, int*);
+enum MouseRate {
+    Hz1000 = 0x1,
+    Hz500  = 0x2,
+    Hz250  = 0x4,
+    Hz125  = 0x8,
+};
+
+int get_battery_charging(libusb_device_handle*, int*);
+int set_mouse_rate(int, libusb_device_handle*, int*);
 
 #endif
