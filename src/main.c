@@ -123,6 +123,8 @@ int main(int argc, char* argv[])
             fprintf(stderr, "ERROR: Invalid argument for mouse rate.");
             return -1;
         }
+
+        printf("M800Pro: You changed mouse rate.");
     }
     
     
