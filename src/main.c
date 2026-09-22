@@ -1,20 +1,29 @@
 #include <libusb-1.0/libusb.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "../inc/driver.h"
 
 #define APP_NAME "delux_driver"
 
 int main(int argc, char* argv[])
 {
+    char* is_sudo_user = getenv("SUDO_USER");
+    if (!is_sudo_user)
+    {
+        printf("INFO: Please, use sudo for current job.");
+        return 0;
+    }
+    
     if (argc < 2)
     {
         printf("Write ./%s --help to see how it use.\n", APP_NAME);
         return 0;
     }
+    int ret = 0;
 
     libusb_context* ctx = NULL;
-    int ret = libusb_init(&ctx);
+    ret = libusb_init(&ctx);
     if (ret != LIBUSB_SUCCESS)
     {
         fprintf(stderr, "ERROR: Error initialization usb library. Returned value:  %i\n", ret);
@@ -69,21 +78,32 @@ int main(int argc, char* argv[])
 
     int c;
     int what_battery = 0;
+    int set_rate = 0;
+    int mouse_rate = 1;
+    int set_timeoute = 0;
+    int timeout = 0;
 
-    while((c = getopt(argc, argv, ":b")) != -1)
+    while((c = getopt(argc, argv, ":br:t:")) != -1)
     {
         switch(c)
         {
         case 'b':
             what_battery = 1;
             break;
+        case 'r':
+            set_rate = 1;
+            mouse_rate = atoi(optarg);
+            break;
+        case 't':
+            set_timeoute = 1;
+            timeout = atoi(optarg);
         }
     }
     
     if (what_battery)
     {
         int id = 0;
-        int charge = get_battery_value(dev_handle, &id);
+        int charge = get_battery_charging(dev_handle, id);
         if(charge <= 0)
         {
             fprintf(stderr, "ERROR: Could not get battery value. %i %s\n", charge, libusb_error_name(charge));
@@ -97,6 +117,33 @@ int main(int argc, char* argv[])
         {
             printf("M800Pro battery value: %i%%\n", charge);
         }
+    }
+
+    if (set_rate)
+    {
+        int id = 0;
+        ret = set_mouse_rate(mouse_rate, dev_handle, id);
+        if (ret == -1)
+        {
+            fprintf(stderr, "ERROR: Invalid argument for mouse rate.");
+            return -1;
+        }
+
+        printf("M800Pro: You changed mouse rate.");
+    }
+
+    if (set_timeoute)
+    {
+        int id = 0;
+        ret = set_mouse_timeout(timeout, dev_handle, id);
+
+        if (ret == -1)
+        {
+            printf("INFO: Timeout must be positive number.");
+            return 0;
+        }
+
+        printf("M800Pro: You changed mouse shutdown timeout.");
     }
     
     
